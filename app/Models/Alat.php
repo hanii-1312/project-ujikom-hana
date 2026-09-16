@@ -30,6 +30,13 @@ class Alat extends Model
         ];
     }
 
+    // --- TAMBAHKAN FUNGSI INI DI SINI ---
+    public function scopeTersedia($query)
+    {
+        return $query->where('stok', '>', 0)->where('status_kondisi', 'Baik');
+    }
+    // ----------------------------------
+
     // Relasi ke Model Kategori
     public function kategori(): BelongsTo
     {

@@ -4,98 +4,66 @@
 @section('header-title', 'Tambah Alat Baru')
 
 @section('content')
-<div class="max-w-2xl mx-auto">
-    <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-        
-        <div class="p-6 border-b border-gray-200 flex items-center justify-between">
-            <h3 class="text-lg font-bold text-gray-800">Form Tambah Alat</h3>
-            <a href="{{ route('admin.alat.index') }}" 
-               class="bg-gray-200 hover:bg-gray-300 text-gray-700 text-sm font-semibold px-4 py-2 rounded-lg transition">
-                Kembali
-            </a>
+<div class="max-w-2xl bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+    <form action="{{ route('admin.alat.store') }}" method="POST" enctype="multipart/form-data">
+        @csrf
+
+        <div class="mb-4">
+            <label class="block text-gray-700 text-sm font-semibold mb-2">Nama Alat</label>
+            <input type="text" name="nama_alat" value="{{ old('nama_alat') }}" required placeholder="Contoh: Multimeter Digital"
+                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+            @error('nama_alat') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
         </div>
 
-        <form action="{{ route('admin.alat.store') }}" method="POST" class="p-6 space-y-4">
-            @csrf
+        <div class="mb-4">
+            <label class="block text-gray-700 text-sm font-semibold mb-2">Kategori</label>
+            <select name="kategori_id" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <option value="">-- Pilih Kategori --</option>
+                @foreach($kategoris as $kategori)
+                    <option value="{{ $kategori->id }}" {{ old('kategori_id') == $kategori->id ? 'selected' : '' }}>
+                        {{ $kategori->nama_kategori }}
+                    </option>
+                @endforeach
+            </select>
+            @error('kategori_id') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+        </div>
 
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
             <div>
-                <label for="nama_alat" class="block text-sm font-medium text-gray-700 mb-1">
-                    Nama Alat <span class="text-red-500">*</span>
-                </label>
-                <input type="text" 
-                       name="nama_alat" 
-                       id="nama_alat" 
-                       value="{{ old('nama_alat') }}"
-                       placeholder="Masukkan nama alat"
-                       class="w-full px-3 py-2 text-sm border @error('nama_alat') border-red-500 @else border-gray-300 @enderror rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                       required>
-                @error('nama_alat')
-                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                @enderror
+                <label class="block text-gray-700 text-sm font-semibold mb-2">Stok</label>
+                <input type="number" name="stok" value="{{ old('stok', 1) }}" min="0" required
+                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                @error('stok') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
             </div>
-
             <div>
-                <label for="kategori_id" class="block text-sm font-medium text-gray-700 mb-1">
-                    Kategori <span class="text-red-500">*</span>
-                </label>
-                <select name="kategori_id" 
-                        id="kategori_id" 
-                        class="w-full px-3 py-2 text-sm border @error('kategori_id') border-red-500 @else border-gray-300 @enderror rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        required>
-                    <option value="">-- Pilih Kategori --</option>
-                    @foreach(($kategories ?? $kategoris ?? []) as $kategori)
-                        <option value="{{ $kategori->id }}" {{ old('kategori_id') == $kategori->id ? 'selected' : '' }}>
-                            {{ $kategori->nama_kategori }}
-                        </option>
-                    @endforeach
-                </select>
-                @error('kategori_id')
-                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                @enderror
+                <label class="block text-gray-700 text-sm font-semibold mb-2">Status Kondisi</label>
+                <input type="text" name="status_kondisi" value="{{ old('status_kondisi', 'Baik') }}" required placeholder="Contoh: Baik / Rusak Ringan"
+                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                @error('status_kondisi') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
             </div>
+        </div>
 
-            <div>
-                <label for="stok" class="block text-sm font-medium text-gray-700 mb-1">
-                    Stok <span class="text-red-500">*</span>
-                </label>
-                <input type="number" 
-                       name="stok" 
-                       id="stok" 
-                       value="{{ old('stok', 0) }}"
-                       min="0"
-                       class="w-full px-3 py-2 text-sm border @error('stok') border-red-500 @else border-gray-300 @enderror rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                       required>
-                @error('stok')
-                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                @enderror
-            </div>
+        <div class="mb-4">
+            <label class="block text-gray-700 text-sm font-semibold mb-2">Deskripsi (Opsional)</label>
+            <textarea rows="3" name="deskripsi" placeholder="Keterangan tambahan tentang alat..."
+                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">{{ old('deskripsi') }}</textarea>
+            @error('deskripsi') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+        </div>
 
-            <div>
-                <label for="deskripsi" class="block text-sm font-medium text-gray-700 mb-1">
-                    Deskripsi
-                </label>
-                <textarea name="deskripsi" 
-                          id="deskripsi" 
-                          rows="3" 
-                          placeholder="Masukkan deskripsi alat"
-                          class="w-full px-3 py-2 text-sm border @error('deskripsi') border-red-500 @else border-gray-300 @enderror rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">{{ old('deskripsi') }}</textarea>
-                @error('deskripsi')
-                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                @enderror
-            </div>
+        <div class="mb-6">
+            <label class="block text-gray-700 text-sm font-semibold mb-2">Gambar Alat (Opsional)</label>
+            <input type="file" name="gambar" accept="image/*"
+                class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0
+                file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
+            @error('gambar') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+        </div>
 
-            <div class="flex justify-end gap-3 pt-4 border-t border-gray-100">
-                <a href="{{ route('admin.alat.index') }}" 
-                   class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg text-sm font-semibold transition">
-                    Batal
-                </a>
-                <button type="submit" 
-                        class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg text-sm font-semibold transition shadow-sm">
-                    Simpan Alat
-                </button>
-            </div>
-        </form>
-
-    </div>
+        <div class="flex justify-end space-x-2">
+            <a href="{{ route('admin.alat.index') }}"
+                class="bg-gray-300 hover:bg-gray-400 text-gray-800 px-4 py-2 rounded-lg text-sm font-semibold transition">Batal</a>
+            <button type="submit"
+                class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-semibold transition">Simpan</button>
+        </div>
+    </form>
 </div>
-@endsection 
+@endsection

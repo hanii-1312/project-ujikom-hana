@@ -9,7 +9,6 @@ use App\Models\User;
 use App\Models\LogAktivitas;
 use App\Models\Peminjaman;
 use App\Models\DetailPinjam;
-use App\Models\Pengembalian;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
@@ -159,6 +158,7 @@ class AdminController extends Controller
             'email'    => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:6',
             'role'     => 'required|in:admin,petugas,peminjam',
+            'no_hp'    => 'nullable|string|max:20',
         ]);
 
         User::create([
@@ -186,6 +186,7 @@ class AdminController extends Controller
             'name'  => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users,email,' . $id,
             'role'  => 'required|in:admin,petugas,peminjam',
+            'no_hp' => 'nullable|string|max:20',
         ]);
 
         $data = [

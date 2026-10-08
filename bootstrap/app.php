@@ -3,6 +3,7 @@
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use App\Http\Middleware\CheckRole; // <-- 1. Import CheckRole
 use App\Http\Middleware\IsAdmin;
 use App\Http\Middleware\IsPetugas;
 use App\Http\Middleware\IsPeminjam;
@@ -16,7 +17,7 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->alias([
-            'role' => IsAdmin::class, // Ditambahkan agar middleware('role') tidak error lagi
+            'role' => CheckRole::class, 
             'role.admin' => IsAdmin::class,
             'role.petugas' => IsPetugas::class,
             'role.peminjam' => IsPeminjam::class,

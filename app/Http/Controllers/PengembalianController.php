@@ -33,8 +33,3 @@ class PengembalianController extends Controller
         return redirect()->route('admin.pengembalian.index')->with('success', 'Data pengembalian berhasil dihapus.');
     }
 }
-public function indexPengembalian()
-{
-    $pengembalian = \App\Models\Pengembalian::with('peminjaman.user', 'peminjaman.alat')->latest()->get();
-    return view('admin.pengembalian.index', compact('pengembalian'));
-}

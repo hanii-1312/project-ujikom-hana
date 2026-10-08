@@ -1,99 +1,112 @@
 @extends('layouts.app')
 
-@section('title', 'Manajemen Pengguna Sistem')
+@section('title', 'Manajemen User - Panel Admin')
 @section('header-title', 'Daftar Pengguna Sistem')
 
 @section('content')
-<div class="bg-white border border-slate-200 rounded-lg shadow-sm overflow-hidden">
-    <!-- Card Header & Filter Search / Add Button -->
-    <div class="px-6 py-4 border-b border-slate-100 flex flex-col lg:flex-row justify-between items-center gap-4">
-        <h2 class="text-sm font-bold text-slate-700">Daftar Pengguna Sistem</h2>
-        <div class="flex flex-wrap items-center gap-2 w-full lg:w-auto">
-            <input type="text" placeholder="Cari nama atau email..." class="border border-slate-300 rounded-md px-3 py-1.5 text-xs text-slate-600 focus:outline-none focus:border-indigo-500 w-full sm:w-56">
-            <select class="border border-slate-300 rounded-md px-3 py-1.5 text-xs text-slate-600 focus:outline-none focus:border-indigo-500 bg-white">
+<div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+    <div class="p-5 border-b border-gray-200 bg-gray-50 flex flex-col md:flex-row justify-between items-center gap-4">
+        <h3 class="text-lg font-bold text-gray-800">Daftar Pengguna Sistem</h3>
+
+        <form action="{{ route('admin.user.index') }}" method="GET" class="flex items-center gap-2 w-full md:w-auto">
+            <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari nama atau email..." 
+                class="w-full md:w-56 px-3 py-1.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-blue-500">
+
+            <select name="role" class="px-3 py-1.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-blue-500">
                 <option value="">Semua Role</option>
-                <option value="admin">Admin</option>
-                <option value="petugas">Petugas</option>
-                <option value="peminjam">Peminjam</option>
+                <option value="Admin" {{ request('role') == 'Admin' ? 'selected' : '' }}>Admin</option>
+                <option value="Petugas" {{ request('role') == 'Petugas' ? 'selected' : '' }}>Petugas</option>
+                <option value="Peminjam" {{ request('role') == 'Peminjam' ? 'selected' : '' }}>Peminjam</option>
             </select>
-            <button class="bg-slate-800 text-white text-xs px-4 py-1.5 rounded-md hover:bg-slate-700 transition">Cari</button>
-            <a href="#" class="bg-blue-600 text-white text-xs font-semibold px-4 py-1.5 rounded-md hover:bg-blue-700 transition whitespace-nowrap ml-auto lg:ml-0">+ Tambah User</a>
-        </div>
+
+            <button type="submit" class="bg-gray-800 hover:bg-gray-900 text-white px-3.5 py-1.5 text-sm rounded-lg transition">
+                Cari
+            </button>
+
+            @if(request('search') || request('role'))
+                <a href="{{ route('admin.user.index') }}" class="text-sm text-gray-600 hover:underline whitespace-nowrap ml-1">Reset</a>
+            @endif
+        </form>
+
+        <a href="{{ route('admin.user.create') }}" 
+           class="bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold px-4 py-2 rounded-lg transition whitespace-nowrap">
+            + Tambah User
+        </a>
     </div>
 
-    <!-- Table -->
+    {{-- Alert Notifikasi Sukses --}}
+    @if(session('success'))
+        <div class="m-5 p-4 bg-green-100 border border-green-400 text-green-700 rounded-lg text-sm flex items-center justify-between">
+            <span>{{ session('success') }}</span>
+            <button type="button" onclick="this.parentElement.remove()" class="font-bold text-green-700 ml-2">&times;</button>
+        </div>
+    @endif
+
     <div class="overflow-x-auto">
         <table class="w-full text-left border-collapse">
             <thead>
-                <tr class="border-b border-slate-200 text-[11px] font-bold text-slate-500 tracking-wider uppercase bg-slate-50/50">
-                    <th class="py-3 px-6 w-16">NO</th>
-                    <th class="py-3 px-6">NAMA</th>
-                    <th class="py-3 px-6">EMAIL</th>
-                    <th class="py-3 px-6">ROLE</th>
-                    <th class="py-3 px-6">NO. HP</th>
-                    <th class="py-3 px-6 text-right w-44">AKSI</th>
+                <tr class="bg-gray-100 text-gray-700 text-xs uppercase tracking-wider border-b">
+                    <th class="py-3 px-4 font-semibold">No</th>
+                    <th class="py-3 px-4 font-semibold">Nama</th>
+                    <th class="py-3 px-4 font-semibold">Email</th>
+                    <th class="py-3 px-4 font-semibold">Role</th>
+                    <th class="py-3 px-4 font-semibold">No. HP</th>
+                    <th class="py-3 px-4 font-semibold text-center">Aksi</th>
                 </tr>
             </thead>
-            <tbody class="divide-y divide-slate-100 text-xs text-slate-600">
-                <tr class="hover:bg-slate-50/50 transition">
-                    <td class="py-4 px-6 text-slate-500">1</td>
-                    <td class="py-4 px-6 font-medium text-slate-800">Bagus Karim</td>
-                    <td class="py-4 px-6 text-slate-500">admin@gmail.com</td>
-                    <td class="py-4 px-6">
-                        <span class="px-2.5 py-1 text-[10px] font-semibold text-purple-600 bg-purple-100 rounded-full">Admin</span>
-                    </td>
-                    <td class="py-4 px-6 text-slate-600">081234567890</td>
-                    <td class="py-4 px-6 text-right">
-                        <div class="inline-flex items-center gap-1.5 justify-end">
-                            <a href="#" class="bg-amber-400 hover:bg-amber-500 text-white px-3 py-1 rounded text-xs font-medium transition shadow-sm">Edit</a>
-                            <form action="#" method="POST" class="inline">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-xs font-medium transition shadow-sm">Hapus</button>
-                            </form>
-                        </div>
-                    </td>
-                </tr>
-                <tr class="hover:bg-slate-50/50 transition">
-                    <td class="py-4 px-6 text-slate-500">2</td>
-                    <td class="py-4 px-6 font-medium text-slate-800">Arif Muhammad</td>
-                    <td class="py-4 px-6 text-slate-500">petugas@gmail.com</td>
-                    <td class="py-4 px-6">
-                        <span class="px-2.5 py-1 text-[10px] font-semibold text-blue-600 bg-blue-100 rounded-full">Petugas</span>
-                    </td>
-                    <td class="py-4 px-6 text-slate-600">082345678901</td>
-                    <td class="py-4 px-6 text-right">
-                        <div class="inline-flex items-center gap-1.5 justify-end">
-                            <a href="#" class="bg-amber-400 hover:bg-amber-500 text-white px-3 py-1 rounded text-xs font-medium transition shadow-sm">Edit</a>
-                            <form action="#" method="POST" class="inline">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-xs font-medium transition shadow-sm">Hapus</button>
-                            </form>
-                        </div>
-                    </td>
-                </tr>
-                <tr class="hover:bg-slate-50/50 transition">
-                    <td class="py-4 px-6 text-slate-500">3</td>
-                    <td class="py-4 px-6 font-medium text-slate-800">Rian Setiawan</td>
-                    <td class="py-4 px-6 text-slate-500">rian@gmail.com</td>
-                    <td class="py-4 px-6">
-                        <span class="px-2.5 py-1 text-[10px] font-semibold text-emerald-600 bg-emerald-100 rounded-full">Peminjam</span>
-                    </td>
-                    <td class="py-4 px-6 text-slate-600">083456789012</td>
-                    <td class="py-4 px-6 text-right">
-                        <div class="inline-flex items-center gap-1.5 justify-end">
-                            <a href="#" class="bg-amber-400 hover:bg-amber-500 text-white px-3 py-1 rounded text-xs font-medium transition shadow-sm">Edit</a>
-                            <form action="#" method="POST" class="inline">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-xs font-medium transition shadow-sm">Hapus</button>
-                            </form>
-                        </div>
-                    </td>
-                </tr>
+            <tbody class="divide-y divide-gray-200 text-sm text-gray-700">
+                @forelse ($users as $index => $user)
+                    <tr class="hover:bg-gray-50 transition">
+                        <td class="py-3 px-4">{{ $users->firstItem() ? $users->firstItem() + $index : $index + 1 }}</td>
+                        <td class="py-3 px-4 font-medium text-gray-900">{{ $user->name }}</td>
+                        <td class="py-3 px-4">{{ $user->email }}</td>
+                        <td class="py-3 px-4">
+                            {{-- Menggunakan strtolower agar tidak error karena beda huruf besar/kecil --}}
+                            @php $role = strtolower($user->role); @endphp
+
+                            @if($role == 'admin')
+                                <span class="bg-purple-100 text-purple-800 text-xs px-2.5 py-0.5 rounded font-semibold inline-block">Admin</span>
+                            @elseif($role == 'petugas')
+                                <span class="bg-blue-100 text-blue-800 text-xs px-2.5 py-0.5 rounded font-semibold inline-block">Petugas</span>
+                            @else
+                                <span class="bg-green-100 text-green-800 text-xs px-2.5 py-0.5 rounded font-semibold inline-block">Peminjam</span>
+                            @endif
+                        </td>
+                        <td class="py-3 px-4">{{ $user->no_hp ?? '-' }}</td>
+                        <td class="py-3 px-4 text-center">
+                            <div class="flex items-center justify-center space-x-2">
+                                <a href="{{ route('admin.user.edit', $user->id) }}" 
+                                   class="bg-amber-500 hover:bg-amber-600 text-white px-3 py-1.5 rounded text-xs font-semibold transition">
+                                    Edit
+                                </a>
+
+                                <form action="{{ route('admin.user.destroy', $user->id) }}" method="POST" 
+                                      onsubmit="return confirm('Yakin ingin menghapus user ini?')">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" 
+                                            class="bg-red-500 hover:bg-red-600 text-white px-3 py-1.5 rounded text-xs font-semibold transition">
+                                        Hapus
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                @empty
+                    <tr>
+                        <td colspan="6" class="py-6 text-center text-gray-500">
+                            Tidak ada data pengguna yang ditemukan.
+                        </td>
+                    </tr>
+                @endforelse
             </tbody>
         </table>
     </div>
+
+    @if(method_exists($users, 'links'))
+        <div class="p-4 border-t border-gray-200">
+            {{ $users->withQueryString()->links() }}
+        </div>
+    @endif
 </div>
 @endsection

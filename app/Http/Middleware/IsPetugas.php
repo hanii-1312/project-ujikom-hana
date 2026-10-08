@@ -6,23 +6,24 @@ use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class CheckRole
+class IsPetugas
 {
     /**
      * Handle an incoming request.
-     *
-     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      */
-    public function handle(Request $request, Closure $next, ...$roles): Response
+    public function handle(Request $request, Closure $next): Response
     {
-        // Cek apakah user sudah login dan role-nya sesuai
-        if (auth()->check() && in_array(auth()->user()->role, $roles)) {
+        // Cek apakah user sudah login dan role-nya adalah petugas
+        if (auth()->check() && auth()->user()->role === 'petugas') {
             return $next($request);
         }
 
-        // Tampilkan pesan error jika tidak memiliki akses
-        return response()->json([
-            'message' => 'Anda tidak memiliki hak akses untuk halaman ini.'
-        ], 403);
+        // Jika request dari API/AJAX, kembalikan JSON
+        if ($request->expectsJson()) {
+            return response()->json(['message' => 'Anda tidak memiliki hak akses.'], 403);
+        }
+
+        // Jika dari browser biasa, alihkan ke halaman utama/login
+        return redirect('/login')->with('error', 'Anda tidak memiliki hak akses untuk halaman ini.');
     }
 }
